@@ -97,3 +97,9 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         }
     }
 }
+
+pub trait Dispatch {
+    fn init() -> Self;
+
+    fn dispatch(self: &mut Self, v: &Vec<usize>) -> Option<usize>;
+}

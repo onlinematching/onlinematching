@@ -96,10 +96,15 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             Ok(())
         }
     }
+
+    pub fn opt(self: &Self) -> i32 {
+        // temporary unsound
+        self.offline_nodes.len() as i32
+    }
 }
 
 pub trait Dispatch {
-    fn init() -> Self;
+    fn init(offline_size: usize) -> Self;
 
-    fn dispatch(self: &mut Self, v: &Vec<usize>) -> Option<usize>;
+    fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize>;
 }

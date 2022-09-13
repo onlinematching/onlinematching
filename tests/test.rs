@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use onlinematching::{papers, bigraph::Dispatch};
+    
 
     #[test]
     fn bigraph_test() {
@@ -13,7 +13,6 @@ mod tests {
         ]);
         g.insert_online("v2").expect("");
         drop(g);
-        papers::kvv90::algorithm::Ranking::init();
     }
     
 }

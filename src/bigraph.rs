@@ -1,10 +1,8 @@
 use std::collections::BTreeMap;
-use std::hash::{self, Hash};
-use std::marker::PhantomData;
 
 type Edge<Key> = (Key, Key);
 
-pub struct bigraph<Key> {
+pub struct Bigraph<Key> {
     online_nodes: Vec<Key>,
     offline_nodes: Vec<Key>,
     nodes_edges: Vec<Edge<Key>>,
@@ -15,9 +13,9 @@ pub struct bigraph<Key> {
     offline_adjacency_list: Vec<Vec<usize>>,
 }
 
-impl<Key: Ord + Copy> bigraph<Key> {
-    pub fn new() -> bigraph<Key> {
-        bigraph {
+impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
+    pub fn new() -> Bigraph<Key> {
+        Bigraph {
             online_nodes: vec![],
             offline_nodes: vec![],
             nodes_edges: vec![],
@@ -34,9 +32,10 @@ impl<Key: Ord + Copy> bigraph<Key> {
         for edge in edges {
             assert!(
                 !graph.nodes_edges.contains(edge),
-                "edges should't contain the same edge"
+                "edges should't contain the same edge: {:?}",
+                edge
             );
-            let (online, offline) = edge;
+            let (offline, online) = edge;
 
             let online_index;
             // It means a new online node has arrived
@@ -74,4 +73,27 @@ impl<Key: Ord + Copy> bigraph<Key> {
         graph
     }
 
+    pub fn insert_offline(self: &mut Self, key: Key) -> Result<(), String> {
+        if self.offline_nodes.contains(&key) {
+            Err("The offline nodes already have this key".to_owned())
+        } else {
+            let offline_index = self.offline_nodes.len();
+            self.offline_nodes.push(key);
+            self.offline_adjacency_list.push(vec![]);
+            self.offline_key2index.insert(key, offline_index);
+            Ok(())
+        }
+    }
+
+    pub fn insert_online(self: &mut Self, key: Key) -> Result<(), String> {
+        if self.online_nodes.contains(&key) {
+            Err("The online nodes already have this key".to_owned())
+        } else {
+            let online_index = self.online_nodes.len();
+            self.online_nodes.push(key);
+            self.online_adjacency_list.push(vec![]);
+            self.online_key2index.insert(key, online_index);
+            Ok(())
+        }
+    }
 }

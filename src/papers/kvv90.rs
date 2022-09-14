@@ -5,18 +5,21 @@ pub mod algorithm {
         thread_rng, Rng,
     };
 
-    use crate::{bigraph::Dispatch, papers::util};
+    use crate::{bigraph::Algorithm, papers::util};
 
+    #[allow(non_snake_case)]
     pub struct Random {
         offline_nodes_available: Vec<bool>,
+        pub ALG: usize,
     }
 
-    impl Dispatch for Random {
+    impl Algorithm for Random {
         fn init(offline_size: usize) -> Self {
             let mut vec = Vec::with_capacity(offline_size);
             vec.resize(offline_size, true);
             Random {
                 offline_nodes_available: vec,
+                ALG: 0,
             }
         }
 
@@ -29,9 +32,17 @@ pub mod algorithm {
                 None
             } else {
                 let mut rng = thread_rng();
-                let val: usize = rng.sample(Uniform::new(0, available_offline_nodes.len()));
-                Some(available_offline_nodes[val])
+                let index: usize = rng.sample(Uniform::new(0, available_offline_nodes.len()));
+                self.ALG += 1;
+                self.offline_nodes_available[available_offline_nodes[index]] = false;
+                Some(available_offline_nodes[index])
             }
+        }
+
+        // This should drop / move all the algotithm cause after output
+        // It can't be used anymore.
+        fn alg_output(self: Self) -> usize {
+            self.ALG
         }
     }
 
@@ -54,7 +65,7 @@ pub mod algorithm {
 }
 
 pub mod example {
-    use crate::bigraph::Bigraph;
+    use crate::bigraph::{Bigraph, OnlineAdversarialBigraph};
 
     /// N means the size of Graph, |U| = |V| = 2 * N
     /// This is a “blown-up” version of the simple
@@ -65,16 +76,16 @@ pub mod example {
     /// (the i'th vertex in U and V have an edge between them).
     /// There is also a bipartite clique between V1 and U2 .
     /// It can be shown that Random achieves a **ratio** of 1/2 + o(1)
-    pub fn random_worst_case(n: usize) -> Bigraph<usize> {
+    pub fn random_worst_case(n: usize) -> OnlineAdversarialBigraph<usize> {
         let mut edges = Vec::new();
         for i in 0..(2 * n) {
             edges.push((i, i))
         }
-        for u in 0..n {
-            for v in n..(2 * n) {
+        for v in 0..n {
+            for u in n..(2 * n) {
                 edges.push((u, v))
             }
         }
-        Bigraph::from_edges(&edges)
+        Bigraph::from_edges(&edges).into_online()
     }
 }

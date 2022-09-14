@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    
 
     #[test]
     fn bigraph_test() {
@@ -14,5 +13,15 @@ mod tests {
         g.insert_online("v2").expect("");
         drop(g);
     }
-    
+
+    #[test]
+    fn bigraph_random_alg_test() {
+        let graph = onlinematching::papers::kvv90::example::random_worst_case(200);
+        type Random = onlinematching::papers::kvv90::algorithm::Random;
+        let opt = graph.OPT();
+        let alg = graph.ALG::<Random>();
+        let ratio: f64 = alg as f64 / opt as f64;
+        println!("the ratio is {:?}", ratio);
+        println!("alg: {:?}, opt: {:?}", alg, opt);
+    }
 }

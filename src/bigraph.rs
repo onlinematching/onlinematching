@@ -3,9 +3,9 @@ use std::collections::BTreeMap;
 type Edge<Key> = (Key, Key);
 
 pub struct Bigraph<Key> {
-    online_nodes: Vec<Key>,
-    offline_nodes: Vec<Key>,
-    nodes_edges: Vec<Edge<Key>>,
+    pub online_nodes: Vec<Key>,
+    pub offline_nodes: Vec<Key>,
+    pub nodes_edges: Vec<Edge<Key>>,
     nodes_edges_use_index: Vec<(usize, usize)>,
     online_key2index: BTreeMap<Key, usize>,
     offline_key2index: BTreeMap<Key, usize>,
@@ -97,14 +97,73 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         }
     }
 
-    pub fn opt(self: &Self) -> i32 {
-        // temporary unsound
-        self.offline_nodes.len() as i32
+    pub fn into_online(self: Self) -> OnlineAdversarialBigraph<Key> {
+        let offline_size = self.offline_nodes.len();
+        let mut vec = Vec::with_capacity(offline_size);
+        vec.resize(offline_size, true);
+        OnlineAdversarialBigraph {
+            bigraph: self,
+            offline_nodes_available: vec,
+        }
     }
 }
 
-pub trait Dispatch {
+pub trait Algorithm
+where
+    Self: Sized,
+{
     fn init(offline_size: usize) -> Self;
 
     fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize>;
+
+    fn alg_output(self: Self) -> usize;
+}
+
+pub struct OnlineAdversarialBigraph<Key> {
+    bigraph: Bigraph<Key>,
+    offline_nodes_available: Vec<bool>,
+}
+
+impl<'a, Key> OnlineAdversarialBigraph<Key> {
+    pub fn iter(self: &'a Self) -> OnlineAdversarialBigraphIter<'a> {
+        OnlineAdversarialBigraphIter {
+            online_adjacency_list: &self.bigraph.online_adjacency_list,
+            online_index: 0,
+        }
+    }
+
+    #[allow(non_snake_case)]
+    pub fn OPT(self: &Self) -> usize {
+        // temporary unsound
+        self.bigraph.offline_nodes.len()
+    }
+
+    #[allow(non_snake_case)]
+    pub fn ALG<Alg: Algorithm>(self: &Self) -> usize {
+        let mut alg = Alg::init(self.bigraph.offline_nodes.len());
+        for online_adj in self.iter() {
+            // println!("{:?}", online_adj);
+            alg.dispatch(online_adj);
+        }
+        alg.alg_output()
+    }
+}
+
+pub struct OnlineAdversarialBigraphIter<'a> {
+    online_adjacency_list: &'a Vec<Vec<usize>>,
+    online_index: usize,
+}
+
+impl<'a> Iterator for OnlineAdversarialBigraphIter<'a> {
+    type Item = &'a Vec<usize>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.online_index == self.online_adjacency_list.len() {
+            None
+        } else {
+            let t = Some(&self.online_adjacency_list[self.online_index]);
+            self.online_index += 1;
+            t
+        }
+    }
 }

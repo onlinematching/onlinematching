@@ -20,7 +20,18 @@ mod tests {
         type Random = onlinematching::papers::kvv90::algorithm::Random;
         let opt = graph.OPT();
         let alg = graph.ALG::<Random>();
-        let ratio: f64 = alg as f64 / opt as f64;
+        let ratio = alg / opt;
+        println!("the ratio is {:?}", ratio);
+        println!("alg: {:?}, opt: {:?}", alg, opt);
+    }
+
+    #[test]
+    fn bigraph_ranking_alg_test() {
+        let graph = onlinematching::papers::kvv90::example::ranking_worst_case(200);
+        type Ranking = onlinematching::papers::kvv90::algorithm::Ranking;
+        let opt = graph.OPT();
+        let alg = graph.ALG::<Ranking>();
+        let ratio = alg / opt;
         println!("the ratio is {:?}", ratio);
         println!("alg: {:?}, opt: {:?}", alg, opt);
     }

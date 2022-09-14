@@ -1,9 +1,5 @@
 pub mod algorithm {
-    use rand::{
-        distributions::{Standard, Uniform},
-        rngs::ThreadRng,
-        thread_rng, Rng,
-    };
+    use rand::{distributions::Uniform, thread_rng, Rng};
 
     use crate::{bigraph::Algorithm, papers::util};
 
@@ -41,27 +37,63 @@ pub mod algorithm {
 
         // This should drop / move all the algotithm cause after output
         // It can't be used anymore.
-        fn alg_output(self: Self) -> usize {
-            self.ALG
+        fn alg_output(self: Self) -> f64 {
+            self.ALG as f64
         }
     }
 
-    // pub struct Ranking {
-    //     _offline_nodes_available: Vec<bool>,
-    //     _rng: ThreadRng,
-    // }
+    #[allow(non_snake_case)]
+    pub struct Ranking {
+        offline_nodes_available: Vec<bool>,
+        offline_nodes_rank: Vec<i32>,
+        pub ALG: usize,
+    }
 
-    // impl Dispatch for Ranking {
-    //     fn init(offline_size: usize) -> Self {
-    //         let mut rng = thread_rng();
-    //         let val: f64 = rng.sample(Standard);
-    //         todo!()
-    //     }
+    impl Algorithm for Ranking {
+        fn init(offline_size: usize) -> Self {
+            use rand::seq::SliceRandom;
+            let mut off_available = Vec::with_capacity(offline_size);
+            off_available.resize(offline_size, true);
+            let mut rank = Vec::with_capacity(offline_size);
+            for i in 0..offline_size {
+                rank.push(i as i32)
+            }
+            rank.shuffle(&mut thread_rng());
+            Ranking {
+                offline_nodes_available: off_available,
+                offline_nodes_rank: rank,
+                ALG: 0,
+            }
+        }
 
-    //     fn dispatch(self: &mut Self, v: &Vec<usize>) -> Option<usize> {
-    //         todo!()
-    //     }
-    // }
+        fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize> {
+            let available_offline_nodes = util::get_available_offline_nodes_in_onlineadj(
+                &self.offline_nodes_available,
+                online_adjacent,
+            );
+            if available_offline_nodes.is_empty() {
+                None
+            } else {
+                let mut min = i32::MAX;
+                let mut index = None;
+                for &off_node in available_offline_nodes.iter() {
+                    let off_node_rank = self.offline_nodes_rank[off_node];
+                    if off_node_rank < min {
+                        min = off_node_rank;
+                        index = Some(off_node);
+                    }
+                }
+
+                self.ALG += 1;
+                self.offline_nodes_available[index.unwrap()] = false;
+                index
+            }
+        }
+
+        fn alg_output(self: Self) -> f64 {
+            self.ALG as f64
+        }
+    }
 }
 
 pub mod example {
@@ -84,6 +116,21 @@ pub mod example {
         for v in 0..n {
             for u in n..(2 * n) {
                 edges.push((u, v))
+            }
+        }
+        Bigraph::from_edges(&edges).into_online()
+    }
+
+    /// N means the size of Graph, |U| = |V| = n
+    /// The graph means for all i, $v_i$ connected
+    /// with $\{ u_i, u_{i+1}, ..., u_n \}$
+    /// and the ratio with any algorithm is (1 - 1 / e)
+    /// when lim n \to \inf
+    pub fn ranking_worst_case(n: usize) -> OnlineAdversarialBigraph<usize> {
+        let mut edges = Vec::new();
+        for v in 0..n {
+            for u in v..n {
+                edges.push((u, v));
             }
         }
         Bigraph::from_edges(&edges).into_online()

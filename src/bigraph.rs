@@ -103,7 +103,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         vec.resize(offline_size, true);
         OnlineAdversarialBigraph {
             bigraph: self,
-            offline_nodes_available: vec,
+            // offline_nodes_available: vec,
         }
     }
 }
@@ -116,12 +116,13 @@ where
 
     fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize>;
 
-    fn alg_output(self: Self) -> usize;
+    fn alg_output(self: Self) -> f64;
 }
 
 pub struct OnlineAdversarialBigraph<Key> {
     bigraph: Bigraph<Key>,
-    offline_nodes_available: Vec<bool>,
+    // TODO
+    // offline_nodes_available: Vec<bool>,
 }
 
 impl<'a, Key> OnlineAdversarialBigraph<Key> {
@@ -133,13 +134,13 @@ impl<'a, Key> OnlineAdversarialBigraph<Key> {
     }
 
     #[allow(non_snake_case)]
-    pub fn OPT(self: &Self) -> usize {
+    pub fn OPT(self: &Self) -> f64 {
         // temporary unsound
-        self.bigraph.offline_nodes.len()
+        self.bigraph.offline_nodes.len() as f64
     }
 
     #[allow(non_snake_case)]
-    pub fn ALG<Alg: Algorithm>(self: &Self) -> usize {
+    pub fn ALG<Alg: Algorithm>(self: &Self) -> f64 {
         let mut alg = Alg::init(self.bigraph.offline_nodes.len());
         for online_adj in self.iter() {
             // println!("{:?}", online_adj);

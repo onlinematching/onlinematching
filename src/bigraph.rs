@@ -73,7 +73,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         graph
     }
 
-    pub fn insert_offline(self: &mut Self, key: Key) -> Result<(), String> {
+    pub fn insert_u(self: &mut Self, key: Key) -> Result<(), String> {
         if self.u_nodes.contains(&key) {
             Err("The offline nodes already have this key".to_owned())
         } else {
@@ -85,7 +85,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         }
     }
 
-    pub fn insert_online(self: &mut Self, key: Key) -> Result<(), String> {
+    pub fn insert_v(self: &mut Self, key: Key) -> Result<(), String> {
         if self.v_nodes.contains(&key) {
             Err("The online nodes already have this key".to_owned())
         } else {

@@ -12,7 +12,7 @@ mod tests {
             ("u3", "v1"),
             ("u2", "v2"),
         ]);
-        g.insert_online("v2").expect("");
+        g.insert_v("v2").expect("");
         drop(g);
     }
 

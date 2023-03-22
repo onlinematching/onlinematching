@@ -11,6 +11,9 @@ description = "A fun game where you guess what number the computer has chosen."
 
 [dependencies]
 rand = "0.8"
+ndarray = "0.15.6"
+ndarray-rand = "0.14.0"
+petgraph = "0.6.3"
 
 [profile.dev]
 opt-level = 0

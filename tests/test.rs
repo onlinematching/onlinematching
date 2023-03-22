@@ -48,6 +48,9 @@ mod tests {
             (1, 4),
             (2, 5),
             (3, 6),
+            (1, 2),
+            (1, 3),
+            (2, 3)
         ];
         let graph = Bigraph::from_edges(&edges);
         let duration = 2;

@@ -3,7 +3,7 @@ use crate::bigraph::Bigraph;
 
 impl<Key> Bigraph<Key> {
     pub fn into_online(self: Self) -> OnlineAdversarialBigraph<Key> {
-        let offline_size = self.offline_nodes.len();
+        let offline_size = self.u_nodes.len();
         let mut vec = Vec::with_capacity(offline_size);
         vec.resize(offline_size, true);
         OnlineAdversarialBigraph { bigraph: self }
@@ -17,7 +17,7 @@ pub struct OnlineAdversarialBigraph<Key> {
 impl<'a, Key> OnlineAdversarialBigraph<Key> {
     pub fn iter(self: &'a Self) -> OnlineAdversarialBigraphIter<'a> {
         OnlineAdversarialBigraphIter {
-            online_adjacency_list: &self.bigraph.online_adjacency_list,
+            online_adjacency_list: &self.bigraph.v_adjacency_list,
             online_index: 0,
         }
     }
@@ -25,12 +25,12 @@ impl<'a, Key> OnlineAdversarialBigraph<Key> {
     #[allow(non_snake_case)]
     pub fn OPT(self: &Self) -> f64 {
         // temporary unsound
-        self.bigraph.offline_nodes.len() as f64
+        self.bigraph.u_nodes.len() as f64
     }
 
     #[allow(non_snake_case)]
     pub fn ALG<Alg: Algorithm>(self: &Self) -> f64 {
-        let mut alg = Alg::init(self.bigraph.offline_nodes.len());
+        let mut alg = Alg::init(self.bigraph.u_nodes.len());
         for online_adj in self.iter() {
             // println!("{:?}", online_adj);
             let _alg_choose = alg.dispatch(online_adj);

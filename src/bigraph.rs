@@ -3,27 +3,27 @@ use std::collections::BTreeMap;
 type Edge<Key> = (Key, Key);
 
 pub struct Bigraph<Key> {
-    pub online_nodes: Vec<Key>,
-    pub offline_nodes: Vec<Key>,
+    pub v_nodes: Vec<Key>,
+    pub u_nodes: Vec<Key>,
     pub nodes_edges: Vec<Edge<Key>>,
     nodes_edges_use_index: Vec<(usize, usize)>,
-    online_key2index: BTreeMap<Key, usize>,
-    offline_key2index: BTreeMap<Key, usize>,
-    pub online_adjacency_list: Vec<Vec<usize>>,
-    offline_adjacency_list: Vec<Vec<usize>>,
+    v_key2index: BTreeMap<Key, usize>,
+    u_key2index: BTreeMap<Key, usize>,
+    pub v_adjacency_list: Vec<Vec<usize>>,
+    u_adjacency_list: Vec<Vec<usize>>,
 }
 
 impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
     pub fn new() -> Bigraph<Key> {
         Bigraph {
-            online_nodes: vec![],
-            offline_nodes: vec![],
+            v_nodes: vec![],
+            u_nodes: vec![],
             nodes_edges: vec![],
             nodes_edges_use_index: vec![],
-            online_key2index: BTreeMap::new(),
-            offline_key2index: BTreeMap::new(),
-            online_adjacency_list: vec![],
-            offline_adjacency_list: vec![],
+            v_key2index: BTreeMap::new(),
+            u_key2index: BTreeMap::new(),
+            v_adjacency_list: vec![],
+            u_adjacency_list: vec![],
         }
     }
 
@@ -40,26 +40,26 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             let online_index;
             // It means a new online node has arrived
             // so the adjacency_list and nodes list should be increased
-            if !graph.online_nodes.contains(online) {
-                online_index = graph.online_nodes.len();
-                graph.online_key2index.insert(online.clone(), online_index);
-                graph.online_nodes.push(online.clone());
-                graph.online_adjacency_list.push(vec![]);
+            if !graph.v_nodes.contains(online) {
+                online_index = graph.v_nodes.len();
+                graph.v_key2index.insert(online.clone(), online_index);
+                graph.v_nodes.push(online.clone());
+                graph.v_adjacency_list.push(vec![]);
             } else {
-                online_index = graph.online_key2index[online];
+                online_index = graph.v_key2index[online];
             }
 
             // exactly the same as above
             let offline_index;
-            if !graph.offline_nodes.contains(offline) {
-                offline_index = graph.offline_nodes.len();
+            if !graph.u_nodes.contains(offline) {
+                offline_index = graph.u_nodes.len();
                 graph
-                    .offline_key2index
+                    .u_key2index
                     .insert(offline.clone(), offline_index);
-                graph.offline_nodes.push(offline.clone());
-                graph.offline_adjacency_list.push(vec![]);
+                graph.u_nodes.push(offline.clone());
+                graph.u_adjacency_list.push(vec![]);
             } else {
-                offline_index = graph.offline_key2index[offline];
+                offline_index = graph.u_key2index[offline];
             }
 
             graph.nodes_edges.push(edge.clone());
@@ -67,32 +67,32 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
                 .nodes_edges_use_index
                 .push((online_index, offline_index));
 
-            graph.online_adjacency_list[online_index].push(offline_index);
-            graph.offline_adjacency_list[offline_index].push(online_index);
+            graph.v_adjacency_list[online_index].push(offline_index);
+            graph.u_adjacency_list[offline_index].push(online_index);
         }
         graph
     }
 
     pub fn insert_offline(self: &mut Self, key: Key) -> Result<(), String> {
-        if self.offline_nodes.contains(&key) {
+        if self.u_nodes.contains(&key) {
             Err("The offline nodes already have this key".to_owned())
         } else {
-            let offline_index = self.offline_nodes.len();
-            self.offline_nodes.push(key);
-            self.offline_adjacency_list.push(vec![]);
-            self.offline_key2index.insert(key, offline_index);
+            let offline_index = self.u_nodes.len();
+            self.u_nodes.push(key);
+            self.u_adjacency_list.push(vec![]);
+            self.u_key2index.insert(key, offline_index);
             Ok(())
         }
     }
 
     pub fn insert_online(self: &mut Self, key: Key) -> Result<(), String> {
-        if self.online_nodes.contains(&key) {
+        if self.v_nodes.contains(&key) {
             Err("The online nodes already have this key".to_owned())
         } else {
-            let online_index = self.online_nodes.len();
-            self.online_nodes.push(key);
-            self.online_adjacency_list.push(vec![]);
-            self.online_key2index.insert(key, online_index);
+            let online_index = self.v_nodes.len();
+            self.v_nodes.push(key);
+            self.v_adjacency_list.push(vec![]);
+            self.v_key2index.insert(key, online_index);
             Ok(())
         }
     }

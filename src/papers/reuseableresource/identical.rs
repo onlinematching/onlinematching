@@ -26,7 +26,7 @@ pub struct OnlineAdversarialBigraphIter<'a> {
 impl<'a, Key> OnlineAdversarialBigraph<Key> {
     pub fn iter(self: &'a Self) -> OnlineAdversarialBigraphIter<'a> {
         OnlineAdversarialBigraphIter {
-            online_adjacency_list: &self.bigraph.online_adjacency_list,
+            online_adjacency_list: &self.bigraph.v_adjacency_list,
             online_index: 0,
         }
     }
@@ -39,12 +39,12 @@ impl<'a, Key> OnlineAdversarialBigraph<Key> {
         if let Some(opt) = self.opt {
             return opt;
         }
-        self.bigraph.online_nodes.len() as f64
+        self.bigraph.v_nodes.len() as f64
     }
 
     #[allow(non_snake_case)]
     pub fn ALG<Alg: Algorithm>(self: &Self) -> f64 {
-        let mut alg = Alg::init(self.bigraph.offline_nodes.len(), self.duration);
+        let mut alg = Alg::init(self.bigraph.u_nodes.len(), self.duration);
         for online_adj in self.iter() {
             // println!("{:?}", online_adj);
             let alg_choose = alg.dispatch(online_adj);

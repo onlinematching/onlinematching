@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::VecDeque;
 
 type Edge<Key> = (Key, Key);
 
@@ -53,9 +54,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             let offline_index;
             if !graph.u_nodes.contains(offline) {
                 offline_index = graph.u_nodes.len();
-                graph
-                    .u_key2index
-                    .insert(offline.clone(), offline_index);
+                graph.u_key2index.insert(offline.clone(), offline_index);
                 graph.u_nodes.push(offline.clone());
                 graph.u_adjacency_list.push(vec![]);
             } else {
@@ -96,6 +95,81 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             Ok(())
         }
     }
-
 }
 
+pub fn hopcroft_karp_matching(graph: &Bigraph<char>) -> Vec<(usize, usize)> {
+    let mut matching = vec![];
+
+    // Initialize the distance and matching arrays
+    let mut dist = vec![usize::MAX; graph.v_nodes.len()];
+    let mut mate = vec![None; graph.v_nodes.len()];
+
+    // Find the nodes on the left side of the bipartite graph
+    let left_nodes: Vec<usize> = graph
+        .v_nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &_key)| {
+            if graph.v_adjacency_list[i].is_empty() {
+                None
+            } else {
+                Some(i)
+            }
+        })
+        .collect();
+
+    // Initialize the BFS queue
+    let mut queue = VecDeque::new();
+
+    // Repeat until no augmenting paths are found
+    loop {
+        // Find all unmatched nodes on the left side
+        for &i in &left_nodes {
+            if mate[i].is_none() {
+                dist[i] = 0;
+                queue.push_back(i);
+            } else {
+                dist[i] = usize::MAX;
+            }
+        }
+
+        // Run BFS to find shortest augmenting paths
+        while let Some(u) = queue.pop_front() {
+            for &v in &graph.v_adjacency_list[u] {
+                if let Some(w) = mate[v] {
+                    if dist[w] == usize::MAX {
+                        dist[w] = dist[u] + 1;
+                        queue.push_back(w);
+                    }
+                }
+            }
+        }
+
+        // No augmenting paths found, so we're done
+        if dist[dist.len() - 1] == usize::MAX {
+            break;
+        }
+
+        // Find augmenting paths and update the matching
+        for &i in &left_nodes {
+            if mate[i].is_none() && dfs(&graph, &mut mate, &mut dist, i) {
+                matching.push((i, mate[i].unwrap()));
+            }
+        }
+    }
+
+    matching
+}
+
+fn dfs(graph: &Bigraph<char>, mate: &mut [Option<usize>], dist: &mut [usize], u: usize) -> bool {
+    for &v in &graph.v_adjacency_list[u] {
+        if let Some(w) = mate[v] {
+            if dist[w] == dist[u] + 1 && dfs(graph, mate, dist, w) {
+                mate[u] = Some(v);
+                mate[v] = Some(u);
+                return true;
+            }
+        }
+    }
+    false
+}

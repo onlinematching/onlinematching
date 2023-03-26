@@ -28,7 +28,10 @@ mod tests {
 
     #[test]
     fn reuseableresource_ranking_alg_test() {
-        let _graph = onlinematching::papers::reuseableresource::identical::example::z_graph_with_duration(200, 200);
+        let _graph =
+            onlinematching::papers::reuseableresource::identical::example::z_graph_with_duration(
+                200, 200,
+            );
         let edges = vec![
             (1, 1),
             (2, 2),
@@ -38,7 +41,7 @@ mod tests {
             (3, 6),
             (1, 2),
             (1, 3),
-            (2, 3)
+            (2, 3),
         ];
         let graph = Bigraph::from_edges(&edges);
         let duration = 2;
@@ -47,7 +50,8 @@ mod tests {
         let mut alg = 0.;
         for _ in 0..10000 {
             opt += graph.OPT();
-            alg += graph.ALG::<onlinematching::papers::reuseableresource::identical::algorithm::Ranking>();
+            alg += graph
+                .ALG::<onlinematching::papers::reuseableresource::identical::algorithm::Ranking>();
         }
         let ratio = alg / opt;
         println!("the ratio is {:?}", ratio);

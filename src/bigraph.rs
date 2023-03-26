@@ -3,6 +3,7 @@ use std::collections::VecDeque;
 
 type Edge<Key> = (Key, Key);
 
+#[derive(Debug, PartialEq)]
 pub struct Bigraph<Key> {
     pub v_nodes: Vec<Key>,
     pub u_nodes: Vec<Key>,
@@ -36,68 +37,66 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
                 "edges should't contain the same edge: {:?}",
                 edge
             );
-            let (offline, online) = edge;
+            let (u, v) = edge;
 
-            let online_index;
-            // It means a new online node has arrived
+            let v_index;
+            // It means a new v node has arrived
             // so the adjacency_list and nodes list should be increased
-            if !graph.v_nodes.contains(online) {
-                online_index = graph.v_nodes.len();
-                graph.v_key2index.insert(online.clone(), online_index);
-                graph.v_nodes.push(online.clone());
+            if !graph.v_nodes.contains(v) {
+                v_index = graph.v_nodes.len();
+                graph.v_key2index.insert(v.clone(), v_index);
+                graph.v_nodes.push(v.clone());
                 graph.v_adjacency_list.push(vec![]);
             } else {
-                online_index = graph.v_key2index[online];
+                v_index = graph.v_key2index[v];
             }
 
             // exactly the same as above
-            let offline_index;
-            if !graph.u_nodes.contains(offline) {
-                offline_index = graph.u_nodes.len();
-                graph.u_key2index.insert(offline.clone(), offline_index);
-                graph.u_nodes.push(offline.clone());
+            let u_index;
+            if !graph.u_nodes.contains(u) {
+                u_index = graph.u_nodes.len();
+                graph.u_key2index.insert(u.clone(), u_index);
+                graph.u_nodes.push(u.clone());
                 graph.u_adjacency_list.push(vec![]);
             } else {
-                offline_index = graph.u_key2index[offline];
+                u_index = graph.u_key2index[u];
             }
 
             graph.nodes_edges.push(edge.clone());
-            graph
-                .nodes_edges_use_index
-                .push((online_index, offline_index));
+            graph.nodes_edges_use_index.push((v_index, u_index));
 
-            graph.v_adjacency_list[online_index].push(offline_index);
-            graph.u_adjacency_list[offline_index].push(online_index);
+            graph.v_adjacency_list[v_index].push(u_index);
+            graph.u_adjacency_list[u_index].push(v_index);
         }
         graph
     }
 
     pub fn insert_u(self: &mut Self, key: Key) -> Result<(), String> {
         if self.u_nodes.contains(&key) {
-            Err("The offline nodes already have this key".to_owned())
+            Err("The u nodes already have this key".to_owned())
         } else {
-            let offline_index = self.u_nodes.len();
+            let u_index = self.u_nodes.len();
             self.u_nodes.push(key);
             self.u_adjacency_list.push(vec![]);
-            self.u_key2index.insert(key, offline_index);
+            self.u_key2index.insert(key, u_index);
             Ok(())
         }
     }
 
     pub fn insert_v(self: &mut Self, key: Key) -> Result<(), String> {
         if self.v_nodes.contains(&key) {
-            Err("The online nodes already have this key".to_owned())
+            Err("The v nodes already have this key".to_owned())
         } else {
-            let online_index = self.v_nodes.len();
+            let v_index = self.v_nodes.len();
             self.v_nodes.push(key);
             self.v_adjacency_list.push(vec![]);
-            self.v_key2index.insert(key, online_index);
+            self.v_key2index.insert(key, v_index);
             Ok(())
         }
     }
 }
 
-pub fn hopcroft_karp_matching(graph: &Bigraph<char>) -> Vec<(usize, usize)> {
+pub fn hopcroft_karp_matching<Key: Copy>(graph: &Bigraph<Key>) -> Vec<(usize, usize)> {
     let mut matching = vec![];
 
     // Initialize the distance and matching arrays
@@ -161,7 +160,12 @@ pub fn hopcroft_karp_matching(graph: &Bigraph<char>) -> Vec<(usize, usize)> {
     matching
 }
 
-fn dfs(graph: &Bigraph<char>, mate: &mut [Option<usize>], dist: &mut [usize], u: usize) -> bool {
+fn dfs<Key>(
+    graph: &Bigraph<Key>,
+    mate: &mut [Option<usize>],
+    dist: &mut [usize],
+    u: usize,
+) -> bool {
     for &v in &graph.v_adjacency_list[u] {
         if let Some(w) = mate[v] {
             if dist[w] == dist[u] + 1 && dfs(graph, mate, dist, w) {

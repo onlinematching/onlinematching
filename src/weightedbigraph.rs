@@ -3,20 +3,24 @@ use std::collections::BTreeMap;
 type Edge<Key> = (Key, Key);
 
 #[derive(Debug, PartialEq)]
-pub struct Bigraph<Key> {
+struct WBigraph<Key, Weight> {
     pub v_nodes: Vec<Key>,
     pub u_nodes: Vec<Key>,
-    pub nodes_edges: Vec<Edge<Key>>,
-    nodes_edges_use_index: Vec<(usize, usize)>,
+    pub nodes_edges: Vec<(Edge<Key>, Weight)>,
+    nodes_edges_use_index: Vec<((usize, usize), Weight)>,
     v_key2index: BTreeMap<Key, usize>,
     u_key2index: BTreeMap<Key, usize>,
-    pub v_adjacency_list: Vec<Vec<usize>>,
-    pub u_adjacency_list: Vec<Vec<usize>>,
+    pub v_adjacency_list: Vec<Vec<(usize, Weight)>>,
+    pub u_adjacency_list: Vec<Vec<(usize, Weight)>>,
 }
 
-impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
-    pub fn new() -> Bigraph<Key> {
-        Bigraph {
+impl<Key, Weight> WBigraph<Key, Weight>
+where
+    Key: Ord + Copy + std::fmt::Debug,
+    Weight: Ord + Copy + std::fmt::Debug,
+{
+    pub fn new() -> WBigraph<Key, Weight> {
+        WBigraph {
             v_nodes: vec![],
             u_nodes: vec![],
             nodes_edges: vec![],
@@ -28,7 +32,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
         }
     }
 
-    pub fn from_edges(edges: &Vec<Edge<Key>>) -> Self {
+    pub fn from_edges(edges: &Vec<(Edge<Key>, Weight)>) -> Self {
         let mut graph = Self::new();
         for edge in edges {
             assert!(
@@ -36,11 +40,10 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
                 "edges should't contain the same edge: {:?}",
                 edge
             );
-            let (u, v) = edge;
+            let ((ref u, ref v), w) = edge;
+            let w = w.clone();
 
             let v_index;
-            // It means a new v node has arrived
-            // so the adjacency_list and nodes list should be increased
             if !graph.v_nodes.contains(v) {
                 v_index = graph.v_nodes.len();
                 graph.v_key2index.insert(v.clone(), v_index);
@@ -50,7 +53,6 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
                 v_index = graph.v_key2index[v];
             }
 
-            // exactly the same as above
             let u_index;
             if !graph.u_nodes.contains(u) {
                 u_index = graph.u_nodes.len();
@@ -62,10 +64,10 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             }
 
             graph.nodes_edges.push(edge.clone());
-            graph.nodes_edges_use_index.push((v_index, u_index));
+            graph.nodes_edges_use_index.push(((v_index, u_index), w));
 
-            graph.v_adjacency_list[v_index].push(u_index);
-            graph.u_adjacency_list[u_index].push(v_index);
+            graph.v_adjacency_list[v_index].push((u_index, w));
+            graph.u_adjacency_list[u_index].push((v_index, w));
         }
         graph
     }

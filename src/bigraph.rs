@@ -62,7 +62,7 @@ impl<Key: Ord + Copy + std::fmt::Debug> Bigraph<Key> {
             }
 
             graph.nodes_edges.push(edge.clone());
-            graph.nodes_edges_use_index.push((v_index, u_index));
+            graph.nodes_edges_use_index.push((u_index, v_index));
 
             graph.v_adjacency_list[v_index].push(u_index);
             graph.u_adjacency_list[u_index].push(v_index);

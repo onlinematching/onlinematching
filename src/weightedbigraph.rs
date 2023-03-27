@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 type Edge<Key> = (Key, Key);
 
 #[derive(Debug, PartialEq)]
-struct WBigraph<Key, Weight> {
+pub struct WBigraph<Key, Weight> {
     pub v_nodes: Vec<Key>,
     pub u_nodes: Vec<Key>,
     pub nodes_edges: Vec<(Edge<Key>, Weight)>,
@@ -64,7 +64,7 @@ where
             }
 
             graph.nodes_edges.push(edge.clone());
-            graph.nodes_edges_use_index.push(((v_index, u_index), w));
+            graph.nodes_edges_use_index.push(((u_index, v_index), w));
 
             graph.v_adjacency_list[v_index].push((u_index, w));
             graph.u_adjacency_list[u_index].push((v_index, w));

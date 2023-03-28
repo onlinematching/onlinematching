@@ -29,7 +29,7 @@ impl<'a, Key> OnlineAdversarialBigraph<Key> {
     }
 
     #[allow(non_snake_case)]
-    pub fn ALG<Alg: OnlineAlgorithm>(self: &Self) -> f64 {
+    pub fn ALG<Alg: OnlineAlgorithm<usize>>(self: &Self) -> f64 {
         let mut alg = Alg::init(self.bigraph.u_nodes.len());
         for online_adj in self.iter() {
             // println!("{:?}", online_adj);
@@ -59,13 +59,13 @@ impl<'a> Iterator for OnlineAdversarialBigraphIter<'a> {
 }
 
 pub mod algorithm {
-    pub trait OnlineAlgorithm
+    pub trait OnlineAlgorithm<T>
     where
         Self: Sized,
     {
         fn init(offline_size: usize) -> Self;
 
-        fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize>;
+        fn dispatch(self: &mut Self, online_adjacent: &Vec<T>) -> Option<T>;
 
         fn alg_output(self: Self) -> f64;
     }
@@ -78,7 +78,7 @@ pub mod algorithm {
         pub alg: usize,
     }
 
-    impl OnlineAlgorithm for Random {
+    impl OnlineAlgorithm<usize> for Random {
         fn init(offline_size: usize) -> Self {
             let mut vec = Vec::with_capacity(offline_size);
             vec.resize(offline_size, true);
@@ -117,7 +117,7 @@ pub mod algorithm {
         alg: usize,
     }
 
-    impl OnlineAlgorithm for Ranking {
+    impl OnlineAlgorithm<usize> for Ranking {
         fn init(offline_size: usize) -> Self {
             use rand::seq::SliceRandom;
             let mut off_available = Vec::with_capacity(offline_size);

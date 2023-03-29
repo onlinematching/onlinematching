@@ -1,5 +1,7 @@
 use crate::{papers::algorithm::algorithm::OnlineAlgorithm, weightedbigraph::WBigraph};
 
+type OfflineInfo<Weight> = Vec<Weight>;
+
 impl<Key, Weight> WBigraph<Key, Weight> {
     pub fn into_online(self: Self, budget: Vec<Weight>) -> OnlineAdversarialWBigraph<Key, Weight> {
         assert_eq!(
@@ -33,8 +35,11 @@ impl<'a, Key, Weight> OnlineAdversarialWBigraph<Key, Weight> {
     }
 
     #[allow(non_snake_case)]
-    pub fn ALG<Alg: OnlineAlgorithm<(usize, Weight)>>(self: &Self) -> f64 {
-        let mut alg = Alg::init(self.weighted_bigraph.u_nodes.len());
+    pub fn ALG<Alg: OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>>>(
+        self: &Self,
+        budgets: Vec<Weight>,
+    ) -> f64 {
+        let mut alg = Alg::init(budgets);
         for online_adj in self.iter() {
             let _alg_choose = alg.dispatch(online_adj);
         }

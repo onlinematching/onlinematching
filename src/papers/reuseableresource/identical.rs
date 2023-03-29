@@ -1,6 +1,5 @@
 use crate::bigraph::Bigraph;
-
-use self::algorithm::Algorithm;
+use crate::papers::algorithm::algorithm::OnlineAlgorithm;
 
 impl<Key> Bigraph<Key> {
     pub fn into_reuseable_online(self: Self, duration: usize) -> OnlineAdversarialBigraph<Key> {
@@ -43,8 +42,8 @@ impl<'a, Key> OnlineAdversarialBigraph<Key> {
     }
 
     #[allow(non_snake_case)]
-    pub fn ALG<Alg: Algorithm>(self: &Self) -> f64 {
-        let mut alg = Alg::init(self.bigraph.u_nodes.len(), self.duration);
+    pub fn ALG<Alg: OnlineAlgorithm<usize, (usize, usize)>>(self: &Self) -> f64 {
+        let mut alg = Alg::init((self.bigraph.u_nodes.len(), self.duration));
         for online_adj in self.iter() {
             // println!("{:?}", online_adj);
             let alg_choose = alg.dispatch(online_adj);
@@ -68,17 +67,7 @@ impl<'a> Iterator for OnlineAdversarialBigraphIter<'a> {
 }
 
 pub mod algorithm {
-
-    pub trait Algorithm
-    where
-        Self: Sized,
-    {
-        fn init(offline_size: usize, duration: usize) -> Self;
-
-        fn dispatch(self: &mut Self, online_adjacent: &Vec<usize>) -> Option<usize>;
-
-        fn alg_output(self: Self) -> f64;
-    }
+    use crate::papers::algorithm::algorithm::OnlineAlgorithm;
     use rand::thread_rng;
 
     pub struct Ranking {
@@ -88,8 +77,9 @@ pub mod algorithm {
         duration: usize,
     }
 
-    impl Algorithm for Ranking {
-        fn init(offline_size: usize, duration: usize) -> Self {
+    impl OnlineAlgorithm<usize, (usize, usize)> for Ranking {
+        fn init(input: (usize, usize)) -> Self {
+            let (offline_size, duration) = input;
             let mut vec = Vec::with_capacity(offline_size);
             vec.resize(offline_size, 0);
             use rand::seq::SliceRandom;

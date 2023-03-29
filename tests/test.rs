@@ -6,8 +6,8 @@ mod tests {
 
     #[test]
     fn bigraph_random_alg_test() {
-        let graph = onlinematching::papers::algorithm::example::random_worst_case(200);
-        type Random = onlinematching::papers::algorithm::algorithm::Random;
+        let graph = onlinematching::papers::kvv90::example::random_worst_case(200);
+        type Random = onlinematching::papers::kvv90::Random;
         let opt = graph.OPT();
         let alg = graph.ALG::<Random>();
         let ratio = alg / opt;
@@ -17,8 +17,8 @@ mod tests {
 
     #[test]
     fn bigraph_ranking_alg_test() {
-        let graph = onlinematching::papers::algorithm::example::ranking_worst_case(200);
-        type Ranking = onlinematching::papers::algorithm::algorithm::Ranking;
+        let graph = onlinematching::papers::kvv90::example::ranking_worst_case(200);
+        type Ranking = onlinematching::papers::kvv90::Ranking;
         let opt = graph.OPT();
         let alg = graph.ALG::<Ranking>();
         let ratio = alg / opt;

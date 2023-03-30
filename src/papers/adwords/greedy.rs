@@ -1,6 +1,4 @@
 use crate::papers::algorithm::algorithm::OnlineAlgorithm;
-use crate::weightedbigraph::WBigraph;
-use rand::thread_rng;
 use std::default::Default;
 
 type OfflineInfo<Weight> = Vec<Weight>;

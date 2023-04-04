@@ -1,6 +1,8 @@
 use crate::papers::algorithm::algorithm::OnlineAlgorithm;
 use std::default::Default;
 
+use super::util::get_available_offline_nodes_in_weighted_onlineadj;
+
 type OfflineInfo<Weight> = Vec<Weight>;
 
 pub struct Greddy<Weight> {
@@ -8,19 +10,6 @@ pub struct Greddy<Weight> {
     offline_nodes_available: Vec<bool>,
     offline_nodes_loads: Vec<Weight>,
     alg: Weight,
-}
-
-pub fn get_available_offline_nodes_in_weighted_onlineadj<Weight: Copy>(
-    offline_nodes_available: &Vec<bool>,
-    online_adjacent: &Vec<(usize, Weight)>,
-) -> Vec<(usize, Weight)> {
-    let mut vec = Vec::with_capacity(online_adjacent.len());
-    for (offline_node, w) in online_adjacent.iter() {
-        if offline_nodes_available[*offline_node] {
-            vec.push((*offline_node, *w))
-        }
-    }
-    vec
 }
 
 impl<Weight> OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>> for Greddy<Weight>

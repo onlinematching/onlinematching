@@ -15,12 +15,13 @@ impl<Key, Weight> WBigraph<Key, Weight> {
     }
 }
 
+#[derive(Debug)]
 pub struct OnlineAdversarialWBigraph<Key, Weight> {
     pub online_budget: Vec<Weight>,
     pub weighted_bigraph: WBigraph<Key, Weight>,
 }
 
-impl<'a, Key, Weight> OnlineAdversarialWBigraph<Key, Weight> {
+impl<'a, Key, Weight: Clone> OnlineAdversarialWBigraph<Key, Weight> {
     pub fn iter(self: &'a Self) -> OnlineAdversarialWBigraphIter<'a, Weight> {
         OnlineAdversarialWBigraphIter {
             online_adjacency_list: &self.weighted_bigraph.v_adjacency_list,
@@ -36,10 +37,9 @@ impl<'a, Key, Weight> OnlineAdversarialWBigraph<Key, Weight> {
 
     #[allow(non_snake_case)]
     pub fn ALG<Alg: OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>>>(
-        self: &Self,
-        budgets: Vec<Weight>,
+        self: &Self
     ) -> f64 {
-        let mut alg = Alg::init(budgets);
+        let mut alg = Alg::init(self.online_budget.clone());
         for online_adj in self.iter() {
             let _alg_choose = alg.dispatch(online_adj);
         }

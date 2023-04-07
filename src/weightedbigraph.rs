@@ -17,7 +17,7 @@ pub struct WBigraph<Key, Weight> {
 impl<Key, Weight> WBigraph<Key, Weight>
 where
     Key: Ord + Copy + std::fmt::Debug,
-    Weight: Ord + Copy + std::fmt::Debug,
+    Weight: PartialOrd + Copy + std::fmt::Debug,
 {
     pub fn new() -> WBigraph<Key, Weight> {
         WBigraph {

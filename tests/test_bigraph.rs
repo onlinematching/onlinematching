@@ -34,4 +34,14 @@ mod tests_bigraph {
         println!("{:?}", g);
         drop(g);
     }
+
+    #[test]
+    fn weighted_greddy_test() {
+        let n = 5;
+        let g = onlinematching::papers::adwords::greedy::example::greedy_worst_case(n);
+        let opt = (0.99 + 1.) * 5.;
+        let alg = g.ALG::<onlinematching::papers::adwords::greedy::Greddy<f64>>();
+        println!("{:?}", g);
+        println!("opt = {:?}, alg = {:?}", opt, alg);
+    }
 }

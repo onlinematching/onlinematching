@@ -9,7 +9,6 @@ pub struct Greddy<Weight> {
     offline_nodes_budgets: Vec<Weight>,
     offline_nodes_available: Vec<bool>,
     offline_nodes_loads: Vec<Weight>,
-    alg: Weight,
 }
 
 impl<Weight> OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>> for Greddy<Weight>
@@ -28,7 +27,6 @@ where
             offline_nodes_budgets,
             offline_nodes_available,
             offline_nodes_loads,
-            alg: zero,
         }
     }
 
@@ -60,6 +58,27 @@ where
     }
 
     fn alg_output(self: Self) -> f64 {
-        self.alg.into()
+        self.offline_nodes_loads
+            .iter()
+            .map(|&x| x.into())
+            .sum::<f64>()
+    }
+}
+
+pub mod example {
+    use crate::{papers::adwords::adwords::OnlineAdversarialWBigraph, weightedbigraph::WBigraph};
+    pub fn greedy_worst_case(n: usize) -> OnlineAdversarialWBigraph<usize, f64> {
+        let mut edges = Vec::new();
+        for v in 0..n {
+            edges.push(((0, v), 0.99));
+        }
+        for i in 0..2 * n {
+            edges.push(((1, i), 1.));
+        }
+        let wbigraph = WBigraph::from_edges(&edges);
+        let mut budgets = Vec::new();
+        budgets.push(n as f64);
+        budgets.push(n as f64);
+        wbigraph.into_online(budgets)
     }
 }

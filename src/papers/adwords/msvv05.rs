@@ -84,3 +84,23 @@ where
         ans
     }
 }
+
+pub mod example {
+    use crate::{papers::adwords::adwords::OnlineAdversarialWBigraph, weightedbigraph::WBigraph};
+    pub fn thick_triangle_case(m: i32, n: usize) -> OnlineAdversarialWBigraph<usize, i32> {
+        assert!(m > 0);
+        let mut edges = Vec::new();
+        for u in 0..n {
+            for v in 0..(u + 1) * m as usize {
+                edges.push(((u, v), 1))
+            }
+        }
+
+        let wbigraph = WBigraph::from_edges(&edges);
+        let mut budgets = Vec::new();
+        for _ in 0..n {
+            budgets.push(m)
+        }
+        wbigraph.into_online(budgets)
+    }
+}

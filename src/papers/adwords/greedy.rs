@@ -5,6 +5,7 @@ use super::util::get_available_offline_nodes_in_weighted_onlineadj;
 
 type OfflineInfo<Weight> = Vec<Weight>;
 
+#[derive(Debug)]
 pub struct Greddy<Weight> {
     offline_nodes_budgets: Vec<Weight>,
     offline_nodes_available: Vec<bool>,
@@ -13,7 +14,8 @@ pub struct Greddy<Weight> {
 
 impl<Weight> OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>> for Greddy<Weight>
 where
-    Weight: Default + Into<f64> + Copy + std::cmp::PartialOrd + std::ops::AddAssign,
+    Weight:
+        Default + Into<f64> + Copy + std::cmp::PartialOrd + std::ops::AddAssign + std::fmt::Debug,
 {
     fn init(offline_info: OfflineInfo<Weight>) -> Self {
         let l = offline_info.len();

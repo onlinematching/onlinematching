@@ -19,7 +19,6 @@ impl<Weight> OnlineAlgorithm<(usize, Weight), OfflineInfo<Weight>> for MSVV<Weig
 where
     Weight: Default
         + Into<f64>
-        + From<f64>
         + Copy
         + std::cmp::PartialOrd
         + std::ops::AddAssign
@@ -57,15 +56,15 @@ where
         match largest_offline_node {
             Some(node) => {
                 let i = node.0;
-                let bid = node.1;
-                let budget = self.offline_nodes_budgets[i];
-                let mut load = Weight::from(self.offline_nodes_fraction[i]) * budget;
+                let bid: f64 = node.1.into();
+                let budget: f64 = self.offline_nodes_budgets[i].into();
+                let mut load: f64 = self.offline_nodes_fraction[i] * budget;
                 load += bid;
                 if load >= budget {
                     load = budget;
                     self.offline_nodes_available[i] = false;
                 }
-                self.offline_nodes_fraction[i] = load.into() / budget.into();
+                self.offline_nodes_fraction[i] = load / budget;
 
                 Some(i)
             }

@@ -51,7 +51,8 @@ mod tests_bigraph {
         let m = 4;
         let g = onlinematching::papers::adwords::msvv05::example::thick_triangle_case(m, n);
         let opt = n as f64 * m as f64;
-        let alg = g.ALG::<onlinematching::papers::adwords::greedy::Greddy<i32>>();
+        // let alg = g.ALG::<onlinematching::papers::adwords::greedy::Greddy<i32>>();
+        let alg = g.ALG::<onlinematching::papers::adwords::msvv05::MSVV<i32>>();
         println!("----------------------");
         println!("{:?}", g);
         println!("----------------------");

@@ -29,3 +29,6 @@ pub struct StochasticReward<Key, Reword> {
     pub online_rewards: Vec<Reword>,
     pub weighted_bigraph: WBigraph<Key, Prob>,
 }
+
+impl<'a, Key, Reward> StochasticReward<Key, Reward> {
+}

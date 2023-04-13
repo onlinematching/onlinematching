@@ -68,8 +68,8 @@ where
 }
 
 pub mod example {
-    use crate::{papers::adwords::adwords::OnlineAdversarialWBigraph, weightedbigraph::WBigraph};
-    pub fn greedy_worst_case(n: usize) -> OnlineAdversarialWBigraph<usize, f64> {
+    use crate::{papers::adwords::adwords::AdversarialAdwords, weightedbigraph::WBigraph};
+    pub fn greedy_worst_case(n: usize) -> AdversarialAdwords<usize, f64> {
         let mut edges = Vec::new();
         for v in 0..n {
             edges.push(((0, v), 0.99));

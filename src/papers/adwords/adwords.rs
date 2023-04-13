@@ -3,12 +3,12 @@ use crate::{papers::algorithm::algorithm::OnlineAlgorithm, weightedbigraph::WBig
 type OfflineInfo<Weight> = Vec<Weight>;
 
 impl<Key, Weight> WBigraph<Key, Weight> {
-    pub fn into_adwords(self: Self, budget: Vec<Weight>) -> OnlineAdversarialWBigraph<Key, Weight> {
+    pub fn into_adwords(self: Self, budget: Vec<Weight>) -> AdversarialAdwords<Key, Weight> {
         assert_eq!(
             budget.len(),
             self.u_nodes.len() // format!("budget = {:?},\n  graph = {:?}\n", budget, self)
         );
-        OnlineAdversarialWBigraph {
+        AdversarialAdwords {
             online_budget: budget,
             weighted_bigraph: self,
         }
@@ -16,12 +16,12 @@ impl<Key, Weight> WBigraph<Key, Weight> {
 }
 
 #[derive(Debug)]
-pub struct OnlineAdversarialWBigraph<Key, Weight> {
+pub struct AdversarialAdwords<Key, Weight> {
     pub online_budget: Vec<Weight>,
     pub weighted_bigraph: WBigraph<Key, Weight>,
 }
 
-impl<'a, Key, Weight: Clone> OnlineAdversarialWBigraph<Key, Weight> {
+impl<'a, Key, Weight: Clone> AdversarialAdwords<Key, Weight> {
     pub fn iter(self: &'a Self) -> OnlineAdversarialWBigraphIter<'a, Weight> {
         OnlineAdversarialWBigraphIter {
             online_adjacency_list: &self.weighted_bigraph.v_adjacency_list,

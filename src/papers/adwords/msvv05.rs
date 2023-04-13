@@ -100,6 +100,6 @@ pub mod example {
         for _ in 0..n {
             budgets.push(m)
         }
-        wbigraph.into_online(budgets)
+        wbigraph.into_adwords(budgets)
     }
 }

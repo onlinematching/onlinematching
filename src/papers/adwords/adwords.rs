@@ -3,7 +3,7 @@ use crate::{papers::algorithm::algorithm::OnlineAlgorithm, weightedbigraph::WBig
 type OfflineInfo<Weight> = Vec<Weight>;
 
 impl<Key, Weight> WBigraph<Key, Weight> {
-    pub fn into_online(self: Self, budget: Vec<Weight>) -> OnlineAdversarialWBigraph<Key, Weight> {
+    pub fn into_adwords(self: Self, budget: Vec<Weight>) -> OnlineAdversarialWBigraph<Key, Weight> {
         assert_eq!(
             budget.len(),
             self.u_nodes.len() // format!("budget = {:?},\n  graph = {:?}\n", budget, self)

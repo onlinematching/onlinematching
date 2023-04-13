@@ -81,6 +81,6 @@ pub mod example {
         let mut budgets = Vec::new();
         budgets.push(n as f64);
         budgets.push(n as f64);
-        wbigraph.into_online(budgets)
+        wbigraph.into_adwords(budgets)
     }
 }

@@ -3,12 +3,20 @@ use crate::{papers::algorithm::algorithm::OnlineAlgorithm, weightedbigraph::WBig
 type OfflineInfo<Prob> = Vec<Prob>;
 type Prob = f64;
 
-impl<Key> WBigraph<Key, f64> {
-    pub fn into__online<Reward>(self: Self, rewards: Vec<Reward>) -> StochasticReward<Key, Reward> {
-        assert_eq!(
-            rewards.len(),
-            self.u_nodes.len() // format!("budget = {:?},\n  graph = {:?}\n", budget, self)
-        );
+impl<Key> WBigraph<Key, Prob> {
+    pub fn into_stochastic_reward<Reward>(
+        self: Self,
+        rewards: Vec<Reward>,
+    ) -> StochasticReward<Key, Reward> {
+        assert!(rewards.len() == self.u_nodes.len());
+        for edge in self.nodes_edges.iter() {
+            let prob = edge.1;
+            assert!(
+                prob >= 0. && prob <= 1.,
+                "prob = {}, Probility should be in [0, 1]",
+                prob
+            )
+        }
         StochasticReward {
             online_rewards: rewards,
             weighted_bigraph: self,
@@ -19,5 +27,5 @@ impl<Key> WBigraph<Key, f64> {
 #[derive(Debug)]
 pub struct StochasticReward<Key, Reword> {
     pub online_rewards: Vec<Reword>,
-    pub weighted_bigraph: WBigraph<Key, f64>,
+    pub weighted_bigraph: WBigraph<Key, Prob>,
 }

@@ -85,7 +85,7 @@ where
 }
 
 pub mod example {
-    use crate::{papers::adwords::adwords::AdversarialAdwords, weightedbigraph::WBigraph};
+    use crate::{weightedbigraph::WBigraph, papers::adwords::adwords::AdversarialAdwords};
     pub fn thick_triangle_case(m: i32, n: usize) -> AdversarialAdwords<usize, i32> {
         assert!(m > 0);
         let mut edges = Vec::new();

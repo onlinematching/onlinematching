@@ -22,8 +22,8 @@ pub struct AdversarialAdwords<Key, Weight> {
 }
 
 impl<'a, Key, Weight: Clone> AdversarialAdwords<Key, Weight> {
-    pub fn iter(self: &'a Self) -> OnlineAdversarialWBigraphIter<'a, Weight> {
-        OnlineAdversarialWBigraphIter {
+    pub fn iter(self: &'a Self) -> AdversarialAdwordsIter<'a, Weight> {
+        AdversarialAdwordsIter {
             online_adjacency_list: &self.weighted_bigraph.v_adjacency_list,
             online_index: 0,
         }
@@ -47,12 +47,12 @@ impl<'a, Key, Weight: Clone> AdversarialAdwords<Key, Weight> {
     }
 }
 
-pub struct OnlineAdversarialWBigraphIter<'a, Weight> {
+pub struct AdversarialAdwordsIter<'a, Weight> {
     pub online_adjacency_list: &'a Vec<Vec<(usize, Weight)>>,
     pub online_index: usize,
 }
 
-impl<'a, Weight> Iterator for OnlineAdversarialWBigraphIter<'a, Weight> {
+impl<'a, Weight> Iterator for AdversarialAdwordsIter<'a, Weight> {
     type Item = &'a Vec<(usize, Weight)>;
 
     fn next(&mut self) -> Option<Self::Item> {

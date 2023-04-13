@@ -31,4 +31,16 @@ pub struct StochasticReward<Key, Reword> {
 }
 
 impl<'a, Key, Reward> StochasticReward<Key, Reward> {
+    pub fn iter(self: &'a Self) -> StochasticRewardIter<'a> {
+        StochasticRewardIter {
+            online_adjacency_list: &self.weighted_bigraph.v_adjacency_list,
+            online_index: 0,
+        }
+    }
 }
+
+pub struct StochasticRewardIter<'a> {
+    pub online_adjacency_list: &'a Vec<Vec<(usize, Prob)>>,
+    pub online_index: usize,
+}
+

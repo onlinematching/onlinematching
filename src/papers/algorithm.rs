@@ -59,13 +59,13 @@ impl<'a> Iterator for OnlineAdversarialBigraphIter<'a> {
 }
 
 pub mod algorithm {
-    pub trait OnlineAlgorithm<T, OfflineInfo>
+    pub trait OnlineAlgorithm<AdjType, OfflineInfo>
     where
         Self: Sized,
     {
         fn init(offline_info: OfflineInfo) -> Self;
 
-        fn dispatch(self: &mut Self, online_adjacent: &Vec<T>) -> Option<usize>;
+        fn dispatch(self: &mut Self, online_adjacent: &Vec<AdjType>) -> Option<usize>;
 
         fn alg_output(self: Self) -> f64;
     }

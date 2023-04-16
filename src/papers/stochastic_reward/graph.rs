@@ -35,7 +35,7 @@ pub mod algorithm {
 
         fn dispatch(self: &mut Self, online_adjacent: &Vec<AdjType>) -> Option<usize>;
 
-        fn query_success(self: &mut Self, offline_node: Option<usize>) -> bool;
+        fn query_success(self: &mut Self, offline_node: Option<(usize, super::Prob)>) -> Option<bool>;
 
         fn alg_output(self: Self) -> f64;
     }

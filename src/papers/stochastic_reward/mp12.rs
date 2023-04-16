@@ -3,10 +3,15 @@ use crate::papers::adwords::util::get_available_offline_nodes_in_weighted_online
 use super::graph::algorithm::AdaptiveAlgorithm;
 use super::graph::OfflineInfo;
 use super::graph::Prob;
+use rand::Rng;
 
 pub struct Balance {
     offline_nodes_available: Vec<bool>,
     offline_nodes_loads: Vec<Prob>,
+}
+
+pub fn f(p: Prob, l: f64) -> f64 {
+    p * f64::exp(-l)
 }
 
 impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
@@ -27,15 +32,50 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
             &self.offline_nodes_available,
             online_adjacent,
         );
+        let largest_offline_node = available_offline_nodes
+            .iter()
+            .map(|x| {
+                let i = x.0;
+                let prob = x.1;
+                let load = self.offline_nodes_loads[i];
+                (i, f(prob, load), prob)
+            })
+            .max_by(|u1, u2| u1.1.partial_cmp(&u2.1).unwrap())
+            .map(|u| (u.0, u.2));
 
-        todo!()
+        match largest_offline_node {
+            Some(node) => {
+                let i = node.0;
+                let prob: f64 = node.1.into();
+                self.offline_nodes_loads[i] += prob;
+                Some(i)
+            }
+            None => None,
+        }
     }
 
-    fn query_success(self: &mut Self, offline_node: Option<usize>) -> bool {
-        todo!()
+    fn query_success(self: &mut Self, offline_node: Option<(usize, Prob)>) -> Option<bool> {
+        match offline_node {
+            Some(adj_info) => {
+                let mut rng = rand::thread_rng();
+                let prob = adj_info.1;
+                let result = rng.gen_bool(prob);
+                if result {
+                    self.offline_nodes_available[adj_info.0] = false;
+                }
+                Some(result)
+            }
+            None => None,
+        }
     }
 
     fn alg_output(self: Self) -> f64 {
-        todo!()
+        self.offline_nodes_available
+            .iter()
+            .map(|&avail| match avail {
+                true => 0,
+                false => 1,
+            })
+            .sum::<i32>() as f64
     }
 }

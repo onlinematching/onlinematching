@@ -79,3 +79,19 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
             .sum::<i32>() as f64
     }
 }
+
+mod example {
+    use crate::{weightedbigraph::WBigraph, papers::stochastic_reward::graph::StochasticReward};
+
+    pub fn simplist(m: usize) -> StochasticReward<usize> {
+        assert!(m > 0);
+        let p = 1. / m as f64;
+        let mut edges = Vec::new();
+        for v in 0..m {
+            edges.push(((0, v),p ));
+        }
+        let wbigraph = WBigraph::from_edges(&edges);
+        wbigraph.into_stochastic_reward()
+
+    }
+}

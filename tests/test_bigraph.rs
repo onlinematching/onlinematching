@@ -1,7 +1,5 @@
 #[cfg(test)]
 mod tests_bigraph {
-    use std::vec;
-
     use onlinematching::bigraph::Bigraph;
     use onlinematching::weightedbigraph::WBigraph;
 

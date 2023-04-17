@@ -4,7 +4,7 @@ version = "0.2.5"
 edition = "2021"
 license = "MIT"
 authors = ["shinnku <nikaidou@shinnku.com>"]
-description = "A fun game where you guess what number the computer has chosen."
+description = "Online bipartite matching is a type of matching problem where the goal is to match elements from two disjoint sets (also known as \"bipartite graphs\"), where one set represents the \"left\" vertices and the other set represents the \"right\" vertices."
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

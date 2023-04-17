@@ -91,4 +91,17 @@ pub mod example {
         let wbigraph = WBigraph::from_edges(&edges);
         wbigraph.into_stochastic_reward()
     }
+
+    pub fn gk(k: usize, m: usize) -> StochasticReward<usize> {
+        assert!(k > 0 && m > 0);
+        let p = 1. / m as f64;
+        let mut edges = Vec::new();
+        for u in 0..k {
+            for v in 0..(u + 1) * m {
+                edges.push(((u, v), p));
+            }
+        }
+        let wbigraph = WBigraph::from_edges(&edges);
+        wbigraph.into_stochastic_reward()
+    }
 }

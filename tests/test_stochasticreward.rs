@@ -7,7 +7,7 @@ mod tests_bigraph {
         let m = 100;
         let sr = mp12::example::simplist(m);
         let opt = sr.OPT();
-        let alg = sr.ALG::<mp12::Balance>(t);
+        let alg = sr.adaptive_ALG::<mp12::Balance>(t);
         println!("opt = {:?}, alg = {:?}", opt, alg);
     }
 
@@ -17,7 +17,7 @@ mod tests_bigraph {
         let m = 100;
         let sr = mp12::example::gk(2, m);
         let opt = sr.OPT();
-        let alg = sr.ALG::<mp12::Balance>(t);
+        let alg = sr.adaptive_ALG::<mp12::Balance>(t);
         let ratio = alg / opt;
         println!("opt = {:?}, alg = {:?}, ratio = {:?}", opt, alg, ratio);
     }

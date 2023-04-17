@@ -39,6 +39,15 @@ pub mod algorithm {
 
         fn alg_output(self: Self) -> f64;
     }
+
+    pub trait NoneAdaptiveAlgorithm<AdjType, OfflineInfo>
+    where
+        Self: Sized,
+    {
+        fn init(lenth: OfflineInfo) -> Self;
+
+        fn dispatch(self: &mut Self, online_adjacent: &Vec<AdjType>) -> Option<(usize, super::Prob)>;
+    }
 }
 
 impl<'a, Key> StochasticReward<Key> {
@@ -55,7 +64,7 @@ impl<'a, Key> StochasticReward<Key> {
         self.weighted_bigraph.u_nodes.len() as f64
     }
 
-    fn _alg<Alg: AdaptiveAlgorithm<(usize, Prob), OfflineInfo>>(self: &Self) -> f64 {
+    fn _adaptive_alg<Alg: AdaptiveAlgorithm<(usize, Prob), OfflineInfo>>(self: &Self) -> f64 {
         let mut alg = Alg::init(self.weighted_bigraph.u_nodes.len());
         for online_adj in self.iter() {
             let alg_choose = alg.dispatch(online_adj);
@@ -65,10 +74,10 @@ impl<'a, Key> StochasticReward<Key> {
     }
 
     #[allow(non_snake_case)]
-    pub fn ALG<Alg: AdaptiveAlgorithm<(usize, Prob), OfflineInfo>>(self: &Self, precision: usize) -> f64 {
+    pub fn adaptive_ALG<Alg: AdaptiveAlgorithm<(usize, Prob), OfflineInfo>>(self: &Self, precision: usize) -> f64 {
         let mut alg_sum: f64 = 0.;
         for _ in 0..precision {
-            let alg = self._alg::<Alg>();
+            let alg = self._adaptive_alg::<Alg>();
             alg_sum += alg;
         }
         alg_sum / precision as f64

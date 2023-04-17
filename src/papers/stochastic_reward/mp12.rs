@@ -27,7 +27,7 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
         }
     }
 
-    fn dispatch(self: &mut Self, online_adjacent: &Vec<(usize, Prob)>) -> Option<usize> {
+    fn dispatch(self: &mut Self, online_adjacent: &Vec<(usize, Prob)>) -> Option<(usize, Prob)> {
         let available_offline_nodes = get_available_offline_nodes_in_weighted_onlineadj(
             &self.offline_nodes_available,
             online_adjacent,
@@ -45,10 +45,8 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
 
         match largest_offline_node {
             Some(node) => {
-                let i = node.0;
-                let prob: f64 = node.1.into();
-                self.offline_nodes_loads[i] += prob;
-                Some(i)
+                self.offline_nodes_loads[node.0] += node.1;
+                Some(node)
             }
             None => None,
         }
@@ -80,18 +78,17 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
     }
 }
 
-mod example {
-    use crate::{weightedbigraph::WBigraph, papers::stochastic_reward::graph::StochasticReward};
+pub mod example {
+    use crate::{papers::stochastic_reward::graph::StochasticReward, weightedbigraph::WBigraph};
 
     pub fn simplist(m: usize) -> StochasticReward<usize> {
         assert!(m > 0);
         let p = 1. / m as f64;
         let mut edges = Vec::new();
         for v in 0..m {
-            edges.push(((0, v),p ));
+            edges.push(((0, v), p));
         }
         let wbigraph = WBigraph::from_edges(&edges);
         wbigraph.into_stochastic_reward()
-
     }
 }

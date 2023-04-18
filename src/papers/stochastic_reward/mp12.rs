@@ -5,6 +5,7 @@ use super::graph::OfflineInfo;
 use super::graph::Prob;
 use rand::Rng;
 
+#[derive(Debug)]
 pub struct Balance {
     offline_nodes_available: Vec<bool>,
     offline_nodes_loads: Vec<Prob>,

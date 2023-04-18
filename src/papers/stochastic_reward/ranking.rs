@@ -3,7 +3,7 @@ use crate::papers::adwords::util::get_available_offline_nodes_in_weighted_online
 use super::graph::algorithm::AdaptiveAlgorithm;
 use super::graph::OfflineInfo;
 use super::graph::Prob;
-use rand::{distributions::Uniform, thread_rng, Rng};
+use rand::{thread_rng, Rng};
 
 #[derive(Debug)]
 pub struct Ranking {
@@ -47,7 +47,6 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Ranking {
                     index = Some(off_node);
                 }
             }
-            self.offline_nodes_available[index.unwrap().0] = false;
             index
         }
     }

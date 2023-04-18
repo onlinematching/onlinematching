@@ -56,10 +56,27 @@ impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Ranking {
         self: &mut Self,
         offline_node: Option<(usize, super::graph::Prob)>,
     ) -> Option<bool> {
-        todo!()
+        match offline_node {
+            Some(adj_info) => {
+                let mut rng = rand::thread_rng();
+                let prob = adj_info.1;
+                let result = rng.gen_bool(prob);
+                if result {
+                    self.offline_nodes_available[adj_info.0] = false;
+                }
+                Some(result)
+            }
+            None => None,
+        }
     }
 
     fn alg_output(self: Self) -> f64 {
-        todo!()
+        self.offline_nodes_available
+            .iter()
+            .map(|&avail| match avail {
+                true => 0,
+                false => 1,
+            })
+            .sum::<i32>() as f64
     }
 }

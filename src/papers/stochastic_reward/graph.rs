@@ -28,8 +28,6 @@ pub struct StochasticReward<Key> {
 
 pub mod algorithm {
     pub trait AdaptiveAlgorithm<AdjType, OfflineInfo>
-    where
-        Self: Sized,
     {
         fn init(lenth: OfflineInfo) -> Self;
 
@@ -47,8 +45,6 @@ pub mod algorithm {
     }
 
     pub trait NoneAdaptiveAlgorithm<AdjType, OfflineInfo>
-    where
-        Self: Sized,
     {
         fn init(lenth: OfflineInfo) -> Self;
 

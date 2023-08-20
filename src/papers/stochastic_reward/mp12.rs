@@ -1,4 +1,5 @@
 use crate::papers::adwords::util::get_available_offline_nodes_in_weighted_onlineadj;
+use crate::weightedbigraph::WBigraph;
 
 use super::graph::algorithm::AdaptiveAlgorithm;
 use super::graph::OfflineInfo;
@@ -13,6 +14,18 @@ pub struct Balance {
 
 pub fn f(p: Prob, l: f64) -> f64 {
     p * f64::exp(-l)
+}
+
+pub fn from_nonweight_edges(edges: &Vec<(usize, usize)>, m: usize) -> WBigraph<usize, f64> {
+    let p = 1. / m as f64;
+    let mut w_edges = Vec::new();
+    for edge in edges {
+        let (u, v) = *edge;
+        for vi in (v * m)..((v + 1) * m) {
+            w_edges.push(((u, vi), p))
+        }
+    }
+    WBigraph::from_edges(&w_edges)
 }
 
 impl AdaptiveAlgorithm<(usize, Prob), OfflineInfo> for Balance {
